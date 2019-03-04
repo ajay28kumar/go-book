@@ -6,10 +6,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	"github.com/subosito/gotenv"
+	"go-book/models"
 	"log"
 	"net/http"
 	"os"
-	"go-book/models"
 )
 
 
