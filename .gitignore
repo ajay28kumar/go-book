@@ -2,4 +2,5 @@
 #
 .DS_Store
 .idea
-
+# ENV setup should not go to production
+.env

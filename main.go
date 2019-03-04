@@ -1,48 +1,32 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"database/sql"
 	"github.com/gorilla/mux"
+	"github.com/subosito/gotenv"
+	"go-book/controllers"
+	"go-book/driver"
+	"go-book/models"
 	"log"
 	"net/http"
 )
-
-type Book struct {
-	ID int `json:"id"`
-	Title string `json:"title"`
-	Author string `json:"author"`
-	Year string `json:"year"`
+var books [] models.Book
+var db *sql.DB
+func init()  {
+	gotenv.Load()
 }
 
-var books [] Book
+
 
 func main() {
+	db=driver.ConnectDB()
 	router:= mux.NewRouter()
-	books = append(books, Book{0, "Golang pointers", "Mr Google", "2010"})
-
-	router.HandleFunc("/books",getBooks).Methods("GET")
-	router.HandleFunc("/books/{id}",getBook).Methods("GET")
-	router.HandleFunc("/books",addBook).Methods("POST")
-	router.HandleFunc("/books",updateBook).Methods("PUT")
-	router.HandleFunc("/books/{id}",removeBook).Methods("DELETE")
+	controller := controllers.Controller{}
+	router.HandleFunc("/books",controller.GetBooks(db)).Methods("GET")
+	router.HandleFunc("/books/{id}",controller.GetBook(db)).Methods("GET")
+	router.HandleFunc("/books",controller.AddBook(db)).Methods("POST")
+	router.HandleFunc("/books",controller.UpdateBook(db)).Methods("PUT")
+	router.HandleFunc("/books/{id}",controller.RemoveBook(db)).Methods("DELETE")
 
 	log.Fatalln(http.ListenAndServe(":8000", router))
-}
-
-func getBooks(w http.ResponseWriter, r *http.Request)  {
-	b := json.NewEncoder(w).Encode(books)
-}
-func getBook(w http.ResponseWriter, r *http.Request)  {
-	p:=mux.Vars(r)
-	log.Println()
-}
-func addBook(w http.ResponseWriter, r *http.Request)  {
-	log.Println("addBook")
-}
-func updateBook(w http.ResponseWriter, r *http.Request)  {
-	log.Println("updateBook")
-}
-func removeBook(w http.ResponseWriter, r *http.Request)  {
-	log.Println("removeBook")
 }
